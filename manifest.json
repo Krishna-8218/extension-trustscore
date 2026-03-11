@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Review Scraper",
+  "version": "1.0",
+
+  "permissions": ["activeTab", "scripting"],
+
+  "host_permissions": [
+    "https://*.myntra.com/*",
+    "https://*.meesho.com/*",
+    "https://*.flipkart.com/*",
+    "https://*.makemytrip.com/*",
+    "https://*.amazon.in/*",
+    "https://*.amazon.com/*",
+    "https://*.ajio.com/*",
+    "https://*.nykaa.com/*",
+    "https://*.snapdeal.com/*",
+    "https://*.zomato.com/*",
+    "https://*.swiggy.com/*"
+  ],
+
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.myntra.com/*",
+        "https://*.meesho.com/*",
+        "https://*.flipkart.com/*",
+        "https://*.makemytrip.com/*",
+        "https://*.amazon.in/*",
+        "https://*.amazon.com/*",
+        "https://*.ajio.com/*",
+        "https://*.nykaa.com/*",
+        "https://*.snapdeal.com/*",
+        "https://*.zomato.com/*",
+        "https://*.swiggy.com/*"
+      ],
+      "js": ["content/content.js"]
+    }
+  ],
+
+  "action": {
+    "default_popup": "popup/popup.html"
+  }
+}
