@@ -16,7 +16,9 @@
     "https://*.nykaa.com/*",
     "https://*.snapdeal.com/*",
     "https://*.zomato.com/*",
-    "https://*.swiggy.com/*"
+    "https://*.swiggy.com/*",
+    "https://trustscore-ml-model.onrender.com/*"
+    
   ],
 
   "content_scripts": [
