@@ -1,56 +1,26 @@
 {
   "manifest_version": 3,
-  "name": "TrustScore - Review Analyser",
-  "version": "3.0",
-  "description": "Scrape reviews, analyse sentiment, check reviewer credibility and AI authenticity.",
-
-  "permissions": ["activeTab", "scripting", "tabs"],
-
+  "name": "TrustScore Extension",
+  "version": "1.0",
+  "permissions": ["activeTab", "scripting"],
   "background": {
     "service_worker": "background/background.js"
   },
-
   "host_permissions": [
     "https://*.myntra.com/*",
-    "https://*.meesho.com/*",
     "https://*.flipkart.com/*",
-    "https://*.makemytrip.com/*",
-    "https://*.amazon.in/*",
-    "https://*.amazon.com/*",
-    "https://*.ajio.com/*",
-    "https://*.nykaa.com/*",
-    "https://*.snapdeal.com/*",
-    "https://*.zomato.com/*",
-    "https://*.swiggy.com/*",
     "https://trustscore-ml-model.onrender.com/*"
-    
   ],
-
   "content_scripts": [
     {
       "matches": [
         "https://*.myntra.com/*",
-        "https://*.meesho.com/*",
-        "https://*.flipkart.com/*",
-        "https://*.makemytrip.com/*",
-        "https://*.amazon.in/*",
-        "https://*.amazon.com/*",
-        "https://*.ajio.com/*",
-        "https://*.nykaa.com/*",
-        "https://*.snapdeal.com/*",
-        "https://*.zomato.com/*",
-        "https://*.swiggy.com/*"
+        "https://*.flipkart.com/*"
       ],
-      "js": ["content/content.js"],
-      "run_at": "document_idle"
+      "js": ["content/content.js"]
     }
   ],
-
   "action": {
     "default_popup": "popup/popup.html"
-  },
-
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com"
   }
 }
