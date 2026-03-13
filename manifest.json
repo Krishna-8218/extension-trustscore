@@ -1,9 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Review Scraper",
-  "version": "1.0",
+  "name": "TrustScore - Review Analyser",
+  "version": "3.0",
+  "description": "Scrape reviews, analyse sentiment, check reviewer credibility and AI authenticity.",
 
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "tabs"],
+
+  "background": {
+    "service_worker": "background/background.js"
+  },
 
   "host_permissions": [
     "https://*.myntra.com/*",
@@ -36,11 +41,16 @@
         "https://*.zomato.com/*",
         "https://*.swiggy.com/*"
       ],
-      "js": ["content/content.js"]
+      "js": ["content/content.js"],
+      "run_at": "document_idle"
     }
   ],
 
   "action": {
     "default_popup": "popup/popup.html"
+  },
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com"
   }
 }
