@@ -1,0 +1,209 @@
+:root {
+  --bg-dark: #0f172a;
+  --card-dark: rgba(30, 41, 59, 0.7);
+  --primary: #818cf8;
+  --primary-neon: #a5b4fc;
+  --accent: #c084fc;
+  --text-bright: #f8fafc;
+  --text-dim: #94a3b8;
+  --success: #34d399;
+  --ring-size: 80px;
+}
+
+body {
+  width: 380px;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background: var(--bg-dark);
+  color: var(--text-bright);
+  padding: 16px;
+  overflow: hidden;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  box-shadow: 0 0 15px rgba(129, 140, 248, 0.4);
+}
+
+h1 {
+  font-size: 16px;
+  margin: 0;
+  letter-spacing: 0.5px;
+  background: linear-gradient(to right, #fff, var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card {
+  background: var(--card-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+}
+
+.overall-score-section {
+  text-align: center;
+  position: relative;
+}
+
+.main-score {
+  font-size: 64px;
+  font-weight: 800;
+  display: block;
+  margin: 5px 0;
+  background: linear-gradient(to bottom, #fff, var(--primary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 30px rgba(129, 140, 248, 0.3);
+}
+
+.score-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.metrics-row {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 10px;
+}
+
+/* CIRCULAR GRAPHS */
+.ring-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.svg-ring {
+  width: var(--ring-size);
+  height: var(--ring-size);
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.05);
+  stroke-width: 6;
+}
+
+.ring-fill {
+  fill: none;
+  stroke: var(--primary);
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 226; /* 2 * PI * r (r=36) approx 226 */
+  stroke-dashoffset: 226;
+  transition: stroke-dashoffset 1s ease-out;
+  filter: drop-shadow(0 0 5px var(--primary));
+}
+
+.ring-fill.reviewer {
+  stroke: var(--accent);
+  filter: drop-shadow(0 0 5px var(--accent));
+}
+
+.ring-text {
+  position: absolute;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+.relative-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.metric-name {
+  font-size: 10px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* BUTTONS & PROGRESS */
+button {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(129, 140, 248, 0.3);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(129, 140, 248, 0.5);
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 2px;
+  overflow: hidden;
+  display: none;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.status-bar {
+  font-size: 10px;
+  color: var(--text-dim);
+  display: flex;
+  justify-content: space-between;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.loading-text {
+  animation: pulse 1.5s infinite;
+  color: var(--primary-neon);
+}

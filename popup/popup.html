@@ -1,37 +1,76 @@
-<!DOCTYPE html>
 <html>
 <head>
-  <title>Review Scraper</title>
-  <style>
-    body {
-      font-family: Arial;
-      width: 300px;
-      padding: 10px;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      font-size: 16px;
-    }
-
-    textarea {
-      width: 100%;
-      height: 200px;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>TrustScore AI</title>
+    <link rel="stylesheet" href="popup.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
-
 <body>
+    <div class="container">
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon">T</div>
+                <h1>TrustScore</h1>
+            </div>
+            <span class="badge" id="platform-badge" style="color: #34d399; font-size: 10px;">Detected</span>
+        </header>
 
-<h3>Scrape Reviews</h3>
+        <div class="card overall-score-section">
+            <span class="score-label">Overall Reliability</span>
+            <span class="main-score" id="trust-score">0%</span>
+            
+            <div class="progress-bar-container" id="progress-container">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
 
-<button id="scrape">Scrape Reviews</button>
+            <div class="metrics-row">
+                <!-- Content Ring -->
+                <div class="ring-container">
+                    <div class="relative-ring">
+                        <svg class="svg-ring">
+                            <circle class="ring-bg" cx="40" cy="40" r="36"></circle>
+                            <circle class="ring-fill content" id="content-ring" cx="40" cy="40" r="36"></circle>
+                        </svg>
+                        <span class="ring-text" id="authenticity-score">--</span>
+                    </div>
+                    <span class="metric-name">AI Authenticity</span>
+                </div>
 
-<textarea id="output"></textarea>
+                <!-- Reviewer Ring -->
+                <div class="ring-container">
+                    <div class="relative-ring">
+                        <svg class="svg-ring">
+                            <circle class="ring-bg" cx="40" cy="40" r="36"></circle>
+                            <circle class="ring-fill reviewer" id="reviewer-ring" cx="40" cy="40" r="36"></circle>
+                        </svg>
+                        <span class="ring-text" id="credibility-score">--</span>
+                    </div>
+                    <span class="metric-name">Reviewer History</span>
+                </div>
+            </div>
+        </div>
 
-<script src="popup.js"></script>
+        <button id="scrape" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            Analyze Page
+        </button>
 
+        <div class="card info-section">
+            <h3 style="font-size: 13px; margin-top: 0; color: var(--primary);">What do these mean?</h3>
+            <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 5px;">
+                <strong>AI Authenticity:</strong> Our AI checks for "Bot-like" writing patterns in the reviews.
+            </p>
+            <p style="font-size: 11px; color: var(--text-dim); margin: 0;">
+                <strong>Reviewer History:</strong> Our Deep Scan verifies the reviewer's lifetime record and credibility.
+            </p>
+        </div>
+
+        <div class="status-bar">
+            <span id="status">Ready</span>
+            <span>v2.1 Dark Mode</span>
+        </div>
+    </div>
+    <script src="../utils/credibility.js"></script>
+    <script src="popup.js"></script>
 </body>
 </html>
