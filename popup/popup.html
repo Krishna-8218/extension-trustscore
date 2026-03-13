@@ -1,76 +1,408 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>TrustScore AI</title>
-    <link rel="stylesheet" href="popup.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <title>TrustScore – Review Analyser</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      width: 420px;
+      min-height: 580px;
+      background: #0d0d12;
+      color: #e8e8f0;
+      overflow-x: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      padding: 14px 18px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-left { display: flex; align-items: center; gap: 10px; }
+    .header-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px;
+      box-shadow: 0 4px 14px rgba(124,58,237,0.4);
+    }
+    .header h1 {
+      font-size: 16px; font-weight: 700;
+      background: linear-gradient(90deg, #a78bfa, #60a5fa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .header p { font-size: 10px; color: #6b7280; margin-top: 1px; }
+    #platform-badge {
+      font-size: 10px; font-weight: 600; padding: 3px 8px;
+      background: rgba(52,211,153,0.1); color: #34d399;
+      border: 1px solid rgba(52,211,153,0.2); border-radius: 10px;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      background: rgba(255,255,255,0.03);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 0 18px;
+    }
+    .tab-btn {
+      flex: 1; padding: 10px 0;
+      background: none; border: none; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 11.5px; font-weight: 500;
+      color: #6b7280; position: relative; transition: color 0.2s;
+    }
+    .tab-btn::after {
+      content: ''; position: absolute; bottom: -1px;
+      left: 15%; right: 15%; height: 2px; border-radius: 2px 2px 0 0;
+      background: linear-gradient(90deg, #7c3aed, #2563eb);
+      transform: scaleX(0); transition: transform 0.25s;
+    }
+    .tab-btn.active { color: #a78bfa; }
+    .tab-btn.active::after { transform: scaleX(1); }
+    .tab-btn:hover:not(.active) { color: #9ca3af; }
+
+    /* ── Tab Panels ── */
+    .tab-panel { display: none; padding: 16px 18px 18px; animation: fadeIn 0.22s ease; }
+    .tab-panel.active { display: block; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; } }
+
+    /* ── Shared Buttons ── */
+    .primary-btn {
+      width: 100%; padding: 11px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      border: none; border-radius: 10px; color: #fff;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 4px 18px rgba(124,58,237,0.35);
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+    }
+    .primary-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .green-btn {
+      background: linear-gradient(135deg, #059669, #0ea5e9);
+      box-shadow: 0 4px 18px rgba(5,150,105,0.3);
+    }
+    .violet-btn {
+      background: linear-gradient(135deg, #7c3aed, #c026d3);
+      box-shadow: 0 4px 18px rgba(124,58,237,0.3);
+    }
+
+    /* ── Status bar ── */
+    .status-bar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; background: rgba(255,255,255,0.04);
+      border-radius: 8px; margin-top: 10px;
+      font-size: 11px; color: #9ca3af; min-height: 34px;
+    }
+    .status-bar .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #374151; flex-shrink: 0; transition: background 0.3s;
+    }
+    .status-bar.loading .dot { background: #f59e0b; animation: pulse 1s infinite; }
+    .status-bar.success .dot { background: #10b981; }
+    .status-bar.error   .dot { background: #ef4444; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      width: 100%; height: 4px; background: rgba(255,255,255,0.05);
+      border-radius: 2px; overflow: hidden; display: none; margin-top: 8px;
+    }
+    .progress-fill {
+      height: 100%; background: linear-gradient(90deg,#7c3aed,#2563eb);
+      width: 0%; transition: width 0.35s ease;
+    }
+
+    /* ══ REVIEWS TAB ══ */
+    #reviews-list {
+      margin-top: 12px; max-height: 240px; overflow-y: auto;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    #reviews-list::-webkit-scrollbar { width: 4px; }
+    #reviews-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    .review-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 8px; padding: 9px 12px; font-size: 11.5px; line-height: 1.5; color: #d1d5db;
+    }
+    .review-meta { font-size: 10px; color: #6b7280; margin-top: 4px; }
+    .badge {
+      display: inline-block; font-size: 9px; font-weight: 700;
+      padding: 2px 7px; border-radius: 20px; text-transform: uppercase;
+      letter-spacing: 0.4px; margin-bottom: 5px;
+    }
+    .badge.pos { background: rgba(16,185,129,0.15); color: #10b981; }
+    .badge.neg { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .badge.neu { background: rgba(156,163,175,0.1); color: #9ca3af; }
+    .action-row { display: flex; gap: 8px; margin-top: 12px; }
+    .action-btn {
+      flex:1; padding: 8px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; color: #9ca3af; font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 500; cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      display: flex; align-items: center; justify-content: center; gap: 5px;
+    }
+    .action-btn:hover { background: rgba(255,255,255,0.09); color: #e5e7eb; }
+    .empty-state { text-align: center; padding: 30px 20px; color: #4b5563; font-size: 12px; }
+    .empty-state .big { font-size: 30px; margin-bottom: 8px; }
+
+    /* ══ AI SUMMARY TAB ══ */
+    .verdict-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px; padding: 14px;
+      display: flex; align-items: center; gap: 16px; margin-bottom: 14px;
+    }
+    .score-ring-wrap { position: relative; flex-shrink: 0; }
+    .score-ring-wrap svg { transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 6; }
+    .ring-fg {
+      fill: none; stroke-width: 6; stroke-linecap: round;
+      stroke-dasharray: 188; stroke-dashoffset: 188;
+      transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1), stroke 0.4s;
+    }
+    .ring-label {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .ring-label .pct { font-size: 18px; font-weight: 700; line-height: 1; }
+    .ring-label .small { font-size: 8px; color: #6b7280; margin-top: 1px; }
+    .verdict-info { flex: 1; min-width: 0; }
+    .verdict-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 13px; font-weight: 700; letter-spacing: 0.5px; margin-bottom: 7px;
+    }
+    .verdict-badge.BUY   { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+    .verdict-badge.MIXED { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.25); }
+    .verdict-badge.SKIP  { background: rgba(239,68,68,0.15);  color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+    .verdict-badge.NA    { background: rgba(107,114,128,0.15);color: #6b7280; border: 1px solid rgba(107,114,128,0.25); }
+    #verdict-summary { font-size: 11px; color: #9ca3af; line-height: 1.55; }
+    .stats-row { display: flex; gap: 8px; margin-bottom: 14px; }
+    .stat-pill {
+      flex: 1; padding: 9px 8px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px; text-align: center;
+    }
+    .stat-pill .val { font-size: 18px; font-weight: 700; }
+    .stat-pill .lbl { font-size: 9.5px; color: #6b7280; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .stat-pill.pos .val { color: #10b981; }
+    .stat-pill.neg .val { color: #ef4444; }
+    .stat-pill.neu .val { color: #9ca3af; }
+    .chart-card {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px; padding: 14px; margin-bottom: 14px;
+    }
+    .chart-title { font-size: 11px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .donut-wrap { display: flex; align-items: center; gap: 16px; }
+    .legend { display: flex; flex-direction: column; gap: 7px; flex: 1; }
+    .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #d1d5db; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .prompt-box { text-align: center; padding: 24px 20px; color: #4b5563; font-size: 12px; }
+    .prompt-box .big { font-size: 28px; margin-bottom: 8px; }
+
+    /* ══ TRUST SCORE TAB ══ */
+    .trust-card {
+      background: rgba(30,41,59,0.7); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px; padding: 18px; margin-bottom: 14px;
+      backdrop-filter: blur(12px); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .trust-score-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1.5px; }
+    .trust-score-main {
+      font-size: 60px; font-weight: 800; display: block; margin: 6px 0 10px;
+      background: linear-gradient(to bottom, #fff, #818cf8);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .metrics-row { display: flex; justify-content: space-around; margin-top: 4px; }
+    .ring-container { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .svg-ring { width: 80px; height: 80px; transform: rotate(-90deg); }
+    .ring-bg-lg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 6; }
+    .ring-fill-lg {
+      fill: none; stroke: #818cf8; stroke-width: 6; stroke-linecap: round;
+      stroke-dasharray: 226; stroke-dashoffset: 226;
+      transition: stroke-dashoffset 1s ease-out;
+      filter: drop-shadow(0 0 5px #818cf8);
+    }
+    .ring-fill-lg.reviewer { stroke: #c084fc; filter: drop-shadow(0 0 5px #c084fc); }
+    .relative-ring { position: relative; display: flex; align-items: center; justify-content: center; }
+    .ring-text { position: absolute; font-size: 13px; font-weight: 700; color: white; }
+    .metric-name { font-size: 10px; color: #94a3b8; text-transform: uppercase; }
+    .info-card {
+      background: rgba(30,41,59,0.5); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 14px; margin-bottom: 14px;
+    }
+    .info-card h3 { font-size: 12px; color: #818cf8; margin-bottom: 8px; }
+    .info-card p { font-size: 11px; color: #94a3b8; line-height: 1.55; margin-bottom: 6px; }
+    .info-card p:last-child { margin-bottom: 0; }
+  </style>
 </head>
+
 <body>
-    <div class="container">
-        <header>
-            <div class="logo-area">
-                <div class="logo-icon">T</div>
-                <h1>TrustScore</h1>
-            </div>
-            <span class="badge" id="platform-badge" style="color: #34d399; font-size: 10px;">Detected</span>
-        </header>
 
-        <div class="card overall-score-section">
-            <span class="score-label">Overall Reliability</span>
-            <span class="main-score" id="trust-score">0%</span>
-            
-            <div class="progress-bar-container" id="progress-container">
-                <div class="progress-bar-fill" id="progress-bar"></div>
-            </div>
-
-            <div class="metrics-row">
-                <!-- Content Ring -->
-                <div class="ring-container">
-                    <div class="relative-ring">
-                        <svg class="svg-ring">
-                            <circle class="ring-bg" cx="40" cy="40" r="36"></circle>
-                            <circle class="ring-fill content" id="content-ring" cx="40" cy="40" r="36"></circle>
-                        </svg>
-                        <span class="ring-text" id="authenticity-score">--</span>
-                    </div>
-                    <span class="metric-name">AI Authenticity</span>
-                </div>
-
-                <!-- Reviewer Ring -->
-                <div class="ring-container">
-                    <div class="relative-ring">
-                        <svg class="svg-ring">
-                            <circle class="ring-bg" cx="40" cy="40" r="36"></circle>
-                            <circle class="ring-fill reviewer" id="reviewer-ring" cx="40" cy="40" r="36"></circle>
-                        </svg>
-                        <span class="ring-text" id="credibility-score">--</span>
-                    </div>
-                    <span class="metric-name">Reviewer History</span>
-                </div>
-            </div>
-        </div>
-
-        <button id="scrape" style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-            Analyze Page
-        </button>
-
-        <div class="card info-section">
-            <h3 style="font-size: 13px; margin-top: 0; color: var(--primary);">What do these mean?</h3>
-            <p style="font-size: 11px; color: var(--text-dim); margin-bottom: 5px;">
-                <strong>AI Authenticity:</strong> Our AI checks for "Bot-like" writing patterns in the reviews.
-            </p>
-            <p style="font-size: 11px; color: var(--text-dim); margin: 0;">
-                <strong>Reviewer History:</strong> Our Deep Scan verifies the reviewer's lifetime record and credibility.
-            </p>
-        </div>
-
-        <div class="status-bar">
-            <span id="status">Ready</span>
-            <span>v2.1 Dark Mode</span>
-        </div>
+  <!-- ── Header ── -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-icon">🔍</div>
+      <div>
+        <h1>TrustScore</h1>
+        <p>All-in-one review analyser</p>
+      </div>
     </div>
-    <script src="../utils/credibility.js"></script>
-    <script src="popup.js"></script>
+    <span id="platform-badge">Detecting…</span>
+  </div>
+
+  <!-- ── Tabs ── -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="reviews">📋 Reviews</button>
+    <button class="tab-btn" data-tab="summary">🤖 AI Summary</button>
+    <button class="tab-btn" data-tab="trust">🛡️ Trust Score</button>
+  </div>
+
+  <!-- ═══ REVIEWS TAB ═══ -->
+  <div class="tab-panel active" id="tab-reviews">
+    <button class="primary-btn" id="btn-scrape"><span>⚡</span> Scrape Reviews</button>
+
+    <div class="status-bar" id="reviews-status-bar">
+      <span class="dot"></span>
+      <span id="reviews-status-text">Ready — go to a product page and click Scrape.</span>
+    </div>
+
+    <div id="reviews-list">
+      <div class="empty-state">
+        <div class="big">📦</div>
+        <p>No reviews yet.<br />Go to a product page and click <strong>Scrape Reviews</strong>.</p>
+      </div>
+    </div>
+
+    <div class="action-row" id="action-row" style="display:none;">
+      <button class="action-btn" id="btn-copy">📋 Copy JSON</button>
+      <button class="action-btn" id="btn-download">⬇ Download</button>
+    </div>
+  </div>
+
+  <!-- ═══ AI SUMMARY TAB ═══ -->
+  <div class="tab-panel" id="tab-summary">
+
+    <div id="summary-prompt" class="prompt-box">
+      <div class="big">🤖</div>
+      <p>Scrape some reviews first, then click<br /><strong>Analyse Reviews</strong> to get your verdict.</p>
+    </div>
+
+    <div id="summary-content" style="display:none;">
+
+      <!-- Verdict ring -->
+      <div class="verdict-card">
+        <div class="score-ring-wrap">
+          <svg width="66" height="66" viewBox="0 0 66 66">
+            <circle class="ring-bg" cx="33" cy="33" r="30" />
+            <circle class="ring-fg" id="ring-fg" cx="33" cy="33" r="30" />
+          </svg>
+          <div class="ring-label">
+            <span class="pct" id="ring-pct">—</span>
+            <span class="small">score</span>
+          </div>
+        </div>
+        <div class="verdict-info">
+          <div class="verdict-badge NA" id="verdict-badge">— N/A</div>
+          <p id="verdict-summary">Run the analyser to see your recommendation.</p>
+        </div>
+      </div>
+
+      <!-- Stats pills -->
+      <div class="stats-row">
+        <div class="stat-pill pos"><div class="val" id="stat-pos">0</div><div class="lbl">Positive</div></div>
+        <div class="stat-pill neg"><div class="val" id="stat-neg">0</div><div class="lbl">Negative</div></div>
+        <div class="stat-pill neu"><div class="val" id="stat-neu">0</div><div class="lbl">Neutral</div></div>
+      </div>
+
+      <!-- Donut chart -->
+      <div class="chart-card">
+        <div class="chart-title">Sentiment Distribution</div>
+        <div class="donut-wrap">
+          <canvas id="donut-canvas" width="110" height="110"></canvas>
+          <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div><span id="leg-pos">Positive – 0%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div><span id="leg-neg">Negative – 0%</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:#4b5563"></div><span id="leg-neu">Neutral – 0%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar chart -->
+      <div class="chart-card">
+        <div class="chart-title">Category Breakdown</div>
+        <canvas id="bar-canvas" width="370" height="160"></canvas>
+      </div>
+    </div>
+
+    <button class="primary-btn green-btn" id="btn-analyse"><span>🔬</span> Analyse Reviews</button>
+  </div>
+
+  <!-- ═══ TRUST SCORE TAB ═══ -->
+  <div class="tab-panel" id="tab-trust">
+
+    <!-- Overall score card -->
+    <div class="trust-card">
+      <span class="trust-score-label">Overall Reliability</span>
+      <span class="trust-score-main" id="trust-score">0%</span>
+
+      <!-- Progress bar (during scan) -->
+      <div class="progress-wrap" id="progress-container">
+        <div class="progress-fill" id="progress-bar"></div>
+      </div>
+
+      <!-- Two metric rings -->
+      <div class="metrics-row">
+        <div class="ring-container">
+          <div class="relative-ring">
+            <svg class="svg-ring">
+              <circle class="ring-bg-lg" cx="40" cy="40" r="36"></circle>
+              <circle class="ring-fill-lg" id="content-ring" cx="40" cy="40" r="36"></circle>
+            </svg>
+            <span class="ring-text" id="authenticity-score">--</span>
+          </div>
+          <span class="metric-name">AI Authenticity</span>
+        </div>
+        <div class="ring-container">
+          <div class="relative-ring">
+            <svg class="svg-ring">
+              <circle class="ring-bg-lg" cx="40" cy="40" r="36"></circle>
+              <circle class="ring-fill-lg reviewer" id="reviewer-ring" cx="40" cy="40" r="36"></circle>
+            </svg>
+            <span class="ring-text" id="credibility-score">--</span>
+          </div>
+          <span class="metric-name">Reviewer History</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- What do these mean? -->
+    <div class="info-card">
+      <h3>📖 What do these mean?</h3>
+      <p><strong>AI Authenticity:</strong> Our ML model checks for bot-like writing patterns and fake-review signals.</p>
+      <p><strong>Reviewer History:</strong> Deep scan verifies the reviewer's history, frequency, and rating patterns for credibility.</p>
+    </div>
+
+    <!-- Status + scan button -->
+    <div class="status-bar" id="trust-status-bar" style="margin-bottom:12px;">
+      <span class="dot"></span>
+      <span id="trust-status-text">Scrape reviews first, then run the Trust Scan.</span>
+    </div>
+
+    <button class="primary-btn violet-btn" id="btn-trust-scan"><span>🛡️</span> Run Trust Scan</button>
+  </div>
+
+  <script src="../utils/credibility.js"></script>
+  <script src="analyzer.js"></script>
+  <script src="popup.js"></script>
 </body>
 </html>
