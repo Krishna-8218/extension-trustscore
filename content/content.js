@@ -32,13 +32,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         }
         // --- 2. FLIPKART ---
         else if (host.includes("flipkart")) {
-          const blocks = document.querySelectorAll('div[class*="col._2w1uU_"], div[class*="XVM_io"], div[class*="_27M-uM"], div[class*="XVM-io"]');
+          // Broadened selectors for Flipkart's changing class names
+          const blocks = document.querySelectorAll('div[class*="col._2w1uU_"], div[class*="XVM_io"], div[class*="_27M-uM"], div[class*="XVM-io"], div[class*="EKo_a_"], div[class*="RcXBOT"], div[class*="Zmyqqu"]');
           blocks.forEach(block => {
-            const textEl = block.querySelector('div[class*="t-ZTKy"], ._6K-vST, [class*="XVM_io"] div, .Z_3No0');
+            const textEl = block.querySelector('div[class*="t-ZTKy"], ._6K-vST, [class*="XVM_io"] div, .Z_3No0, div[class*="Zmyqqu"], div[class*="yH_9y2"]');
             const text = textEl ? textEl.innerText.trim().replace(/READ MORE/g, "").replace(/\n/g, " ") : "";
-            const nameEl = block.querySelector('p[class*="_2sc77"], p[class*="_2V5E9v"], ._2V5E9v, ._2Ns8vY, ._3LYOAd');
+            const nameEl = block.querySelector('p[class*="_2sc77"], p[class*="_2V5E9v"], ._2V5E9v, ._2Ns8vY, ._3LYOAd, p[class*="_2Ns8vY"]');
             const profileLink = block.querySelector('a[href*="/profile/"]');
-            const ratingEl = block.querySelector('div[class*="_3LWZlK"], div[class*="_31v8Ym"]');
+            const ratingEl = block.querySelector('div[class*="_3LWZlK"], div[class*="_31v8Ym"], div[class*="XQDdHH"]');
 
             if (text && text.length > 5 && !reviews.some(r => r.text === text)) {
               reviews.push({
