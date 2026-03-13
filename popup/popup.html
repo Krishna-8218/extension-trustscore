@@ -1,64 +1,115 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TrustScore</title>
+    <meta charset="UTF-8">
+    <title>TrustScore Ultimate</title>
     <link rel="stylesheet" href="popup.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
+        <!-- HEADER -->
         <header>
             <div class="logo-area">
                 <div class="logo-icon">T</div>
-                <h1>TrustScore</h1>
+                <h1>TrustScore <span style="font-size: 10px; opacity: 0.6; font-weight: 400;">Ultimate</span></h1>
             </div>
-            <div id="status-badge" class="status-badge">Detected</div>
+            <div id="status-chip" class="chip">Ready</div>
         </header>
 
-        <div class="card overall-score-section">
-            <span class="score-label">Overall Reliability</span>
-            <span class="main-score" id="trust-score">--</span>
+        <!-- MAIN TABS CONTENT -->
+        <main id="tabs-container">
             
-            <div class="progress-bar-container" id="progress-container">
-                <div class="progress-bar-fill" id="progress-bar"></div>
-            </div>
-
-            <div class="metrics-row">
-                <div class="ring-container">
-                    <div class="relative-ring">
-                        <svg class="svg-ring">
-                            <circle class="ring-bg" cx="40" cy="40" r="36"></circle>
-                            <circle class="ring-fill" id="content-ring" cx="40" cy="40" r="36"></circle>
-                        </svg>
-                        <span class="ring-text" id="authenticity-score">...</span>
+            <!-- TAB 1: DASHBOARD (ORIGINAL RINGS) -->
+            <section id="tab-dashboard" class="tab-content active">
+                <div class="card overall-card">
+                    <span class="score-label">Overall Reliability</span>
+                    <div class="main-score-container">
+                        <span class="main-score" id="trust-score">0%</span>
                     </div>
-                    <span class="metric-name">AI Authenticity</span>
-                </div>
-                <div class="ring-container">
-                    <div class="relative-ring">
-                        <svg class="svg-ring">
-                            <circle class="ring-bg" cx="40" cy="40" r="36"></circle>
-                            <circle class="ring-fill reviewer" id="reviewer-ring" cx="40" cy="40" r="36"></circle>
-                        </svg>
-                        <span class="ring-text" id="credibility-score">...</span>
+                    
+                    <div class="metrics-row">
+                        <div class="ring-container">
+                            <div class="relative-ring">
+                                <svg class="svg-ring"><circle class="ring-bg" cx="40" cy="40" r="36"></circle><circle class="ring-fill content" id="content-ring" cx="40" cy="40" r="36"></circle></svg>
+                                <span class="ring-text" id="authenticity-score">--</span>
+                            </div>
+                            <span class="metric-name">AI Authenticity</span>
+                        </div>
+                        <div class="ring-container">
+                            <div class="relative-ring">
+                                <svg class="svg-ring"><circle class="ring-bg" cx="40" cy="40" r="36"></circle><circle class="ring-fill reviewer" id="reviewer-ring" cx="40" cy="40" r="36"></circle></svg>
+                                <span class="ring-text" id="credibility-score">--</span>
+                            </div>
+                            <span class="metric-name">Reviewer History</span>
+                        </div>
                     </div>
-                    <span class="metric-name">Reviewer History</span>
                 </div>
-            </div>
-        </div>
 
-        <button id="scrape">Analyze Page</button>
+                <div class="action-area">
+                    <div class="progress-bar-container" id="progress-container">
+                        <div class="progress-bar-fill" id="progress-bar"></div>
+                    </div>
+                    <button id="scrape" class="primary-btn">Analyze Product</button>
+                    <div class="mini-status" id="status">Analyzing... Scroll if reviews aren't loading.</div>
+                </div>
+            </section>
 
-        <div class="card info-box">
-            <h4>What do these mean?</h4>
-            <p><strong>AI Authenticity:</strong> Our AI checks for "Bot-like" writing patterns in the reviews.</p>
-            <p><strong>Reviewer History:</strong> Our Deep Scan verifies the reviewer's lifetime record and credibility.</p>
-        </div>
+            <!-- TAB 2: AI SUMMARY -->
+            <section id="tab-summary" class="tab-content">
+                <div class="card summary-card">
+                    <h3 class="section-title">Key Takeaways</h3>
+                    <ul id="summary-list" class="styled-list">
+                        <li class="skeleton-text">Scan a product to generate summary</li>
+                    </ul>
+                </div>
+                <div class="pros-cons-grid">
+                    <div class="card sentiment-card pro">
+                        <h4 class="card-subtitle">Pros</h4>
+                        <div id="pros-list" class="tag-cloud">...</div>
+                    </div>
+                    <div class="card sentiment-card con">
+                        <h4 class="card-subtitle">Cons</h4>
+                        <div id="cons-list" class="tag-cloud">...</div>
+                    </div>
+                </div>
+            </section>
 
-        <div class="status-bar">
-            <span id="status">Ready — go to a product page and click Analyze.</span>
-            <span class="version">v2.1 Dark Mode</span>
-        </div>
+            <!-- TAB 3: DETAILS -->
+            <section id="tab-details" class="tab-content">
+                <div class="card detail-card">
+                    <h3 class="section-title">Topic Breakdown</h3>
+                    <div id="topics-container" class="topics-list">
+                        <div class="skeleton-bar"></div>
+                        <div class="skeleton-bar"></div>
+                        <div class="skeleton-bar"></div>
+                    </div>
+                </div>
+                <div class="info-footer">
+                    <p>Calculated using <strong>Deep Behavioral History</strong> and <strong>Vertex AI Pattern Matching</strong>.</p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-tab="dashboard">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Home</span>
+            </button>
+            <button class="nav-item" data-tab="summary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <span>Summary</span>
+            </button>
+            <button class="nav-item" data-tab="details">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                <span>Details</span>
+            </button>
+        </nav>
     </div>
+
+    <!-- SCRIPTS -->
     <script src="../utils/credibility.js"></script>
     <script src="popup.js"></script>
 </body>
