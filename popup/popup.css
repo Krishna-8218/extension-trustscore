@@ -170,15 +170,18 @@ h1 { font-size: 16px; margin: 0; letter-spacing: -0.5px; }
 .con { border-top: 3px solid var(--danger); }
 
 .chip {
+  display: inline-block;
   font-size: 10px;
   padding: 4px 10px;
   border-radius: 6px;
   background: var(--glass);
   border: 1px solid rgba(255,255,255,0.05);
   transition: 0.2s;
+  white-space: nowrap; /* Prevent chip text wrapping */
+  margin-bottom: 4px;
 }
-.chip.pro { color: var(--success); background: rgba(16, 185, 129, 0.1); }
-.chip.con { color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+.chip.pro { color: #34d399; background: rgba(16, 185, 129, 0.15); }
+.chip.con { color: #ff4757; background: rgba(239, 68, 68, 0.15); }
 .chip:hover { transform: translateY(-1px); background: rgba(255,255,255,0.1); }
 
 /* DETAILS TAB */

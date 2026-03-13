@@ -145,51 +145,79 @@ function generateSummary(reviews) {
   const pros = document.getElementById("pros-list");
   const cons = document.getElementById("cons-list");
   
-  // Basic Keyword Extraction
-  const keywordMap = {
-    quality: ["quality", "premium", "good", "fabric", "material"],
-    value: ["worth", "value", "price", "expensive", "cheap"],
-    shipping: ["delivery", "delivered", "fast", "slow", "delayed"],
-    fit: ["fit", "fitting", "size", "large", "small"]
-  };
-
   const results = { pro: new Set(), con: new Set() };
-  const bulletPoints = [];
-
-  reviews.slice(0, 10).forEach(r => {
+  
+  // Topic Tally
+  const mentions = { quality: 0, comfort: 0, delivery: 0, size: 0, value: 0 };
+  
+  reviews.forEach(r => {
     const text = r.text.toLowerCase();
-    if (text.includes("best") || text.includes("perfect") || text.includes("amazing")) results.pro.add("Excellent Quality");
-    if (text.includes("worst") || text.includes("fake") || text.includes("bad")) results.con.add("Poor Reliability");
-    if (text.includes("size") || text.includes("fit")) results.pro.add("True to Size");
+    
+    // Pro/Con Extraction
+    if (text.includes("comfort") || text.includes("soft") || text.includes("light")) results.pro.add("Highly Comfortable");
+    if (text.includes("quality") || text.includes("premium") || text.includes("sturdy")) results.pro.add("Premium Build");
+    if (text.includes("perfect") || text.includes("fit")) results.pro.add("Perfect Fit");
+    if (text.includes("fake") || text.includes("cheap") || text.includes("bad")) results.con.add("Quality Concerns");
+    if (text.includes("late") || text.includes("delay")) results.con.add("Delivery Issues");
+
+    // Topic Tallying
+    if (text.includes("quality") || text.includes("sturdy")) mentions.quality++;
+    if (text.includes("comfort") || text.includes("soft") || text.includes("sole")) mentions.comfort++;
+    if (text.includes("delivery") || text.includes("shipping")) mentions.delivery++;
+    if (text.includes("size") || text.includes("fit")) mentions.size++;
+    if (text.includes("value") || text.includes("price")) mentions.value++;
   });
 
+  // Find most mentioned topic
+  let topTopic = "quality";
+  let maxMentions = 0;
+  for (const [topic, count] of Object.entries(mentions)) {
+    if (count > maxMentions) {
+      topTopic = topic;
+      maxMentions = count;
+    }
+  }
+
+  const topicLabels = { quality: "Product Quality", comfort: "User Comfort", delivery: "Delivery Timeline", size: "Fit & Sizing", value: "Price Value" };
+
   list.innerHTML = `
-    <li>Overall ${reviews.length > 50 ? "high" : "moderate"} feedback volume detected.</li>
-    <li>Majority of reviews focus on ${reviews.length > 20 ? "Product Quality" : "Delivery Experience"}.</li>
-    <li>Credibility scan suggests ${reviews.some(r => r.credibilityScore < 40) ? "some biased reviewers" : "organic user base"}.</li>
+    <li>Overall ${reviews.length > 20 ? "strong" : "initial"} feedback volume detected.</li>
+    <li>Customers are mostly discussing <strong>${topicLabels[topTopic]}</strong>.</li>
+    <li>Credibility scan suggests ${reviews.some(r => r.credibilityScore < 50) ? "mixed reviewer reliability" : "a highly organic user base"}.</li>
   `;
 
-  pros.innerHTML = Array.from(results.pro).map(p => `<span class="chip pro">${p}</span>`).join("") || "Positive sentiment found";
-  cons.innerHTML = Array.from(results.con).map(c => `<span class="chip con">${c}</span>`).join("") || "No major complaints";
+  pros.innerHTML = Array.from(results.pro).slice(0, 4).map(p => `<span class="chip pro">${p}</span>`).join("") || `<span class="chip pro">Positive Sentiment</span>`;
+  cons.innerHTML = Array.from(results.con).slice(0, 4).map(c => `<span class="chip con">${c}</span>`).join("") || `<span class="chip con">No major issues</span>`;
 }
 
 function generateTopics(reviews) {
   const container = document.getElementById("topics-container");
-  const topics = [
-    { label: "Product Authenticity", score: 85 },
-    { label: "Reviewer Consistency", score: 72 },
-    { label: "Brand Sentiment", score: 90 },
-    { label: "Delivery Reliability", score: 65 }
-  ];
+  
+  // Initialize scores
+  const data = {
+    "Product Quality": { score: 70, weight: 0 },
+    "Reviewer Trust": { score: 0, weight: 0 },
+    "Brand Sentiment": { score: 75, weight: 0 },
+    "Delivery Speed": { score: 80, weight: 0 }
+  };
 
-  container.innerHTML = topics.map(t => `
+  // Calculate dynamic Reviewer Trust
+  const avgCred = reviews.reduce((s, r) => s + (r.credibilityScore || 60), 0) / reviews.length;
+  data["Reviewer Trust"].score = Math.round(avgCred);
+
+  // Adjust Quality/Sentiment based on ratings
+  const avgRating = reviews.reduce((s, r) => s + (r.rating || 5), 0) / reviews.length;
+  data["Product Quality"].score = Math.round(avgRating * 20); // 5 stars = 100%
+  data["Brand Sentiment"].score = Math.round((avgRating * 15) + 25);
+
+  container.innerHTML = Object.entries(data).map(([label, info]) => `
     <div class="topic-item">
         <div class="topic-label-row">
-            <span>${t.label}</span>
-            <span>${t.score}%</span>
+            <span>${label}</span>
+            <span>${info.score}%</span>
         </div>
         <div class="topic-bar-bg">
-            <div class="topic-bar-fill" style="width: ${t.score}%"></div>
+            <div class="topic-bar-fill" style="width: ${info.score}%"></div>
         </div>
     </div>
   `).join("");
